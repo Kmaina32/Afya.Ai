@@ -1,9 +1,9 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB7Kg9cWw5ryaOayB-EpO89exgGtillsDc",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "afyabot-467412.firebaseapp.com",
   projectId: "afyabot-467412",
   storageBucket: "afyabot-467412.appspot.com",
@@ -12,27 +12,9 @@ const firebaseConfig = {
   measurementId: "G-XXXXXXXXXX"
 };
 
+// Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
-
-// Enable offline persistence
-try {
-  enableIndexedDbPersistence(db)
-    .catch((err) => {
-      if (err.code == 'failed-precondition') {
-        // Multiple tabs open, persistence can only be enabled
-        // in one tab at a time.
-        console.warn('Firestore persistence failed: multiple tabs open.');
-      } else if (err.code == 'unimplemented') {
-        // The current browser does not support all of the
-        // features required to enable persistence
-        console.warn('Firestore persistence not available in this browser.');
-      }
-    });
-} catch (error) {
-    console.error("Error enabling Firestore persistence:", error);
-}
-
 
 export { app, auth, db };

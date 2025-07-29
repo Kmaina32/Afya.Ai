@@ -70,7 +70,7 @@ Afya.Ai is built on a modern, scalable, and robust technology stack, ensuring a 
 *   **UI/Styling:** [Tailwind CSS](https://tailwindcss.com/), [ShadCN UI](https://ui.shadcn.com/)
 *   **AI & Generative Features:** [Google's Genkit](https://firebase.google.com/docs/genkit), [Gemini Models](https://deepmind.google/technologies/gemini/)
 *   **Backend & Authentication:** [Firebase](https://firebase.google.com/) (Authentication, Hosting)
-*   **Deployment:** [Firebase App Hosting](https://firebase.google.com/docs/app-hosting)
+*   **Deployment:** [Firebase App Hosting](https://firebase.google.com/), [Vercel](https://vercel.com/)
 
 ---
 
@@ -97,14 +97,14 @@ To get a local copy up and running, follow these simple steps.
     ```
 
 3.  **Set up Environment Variables:**
-    Create a `.env` file in the root of the project. You will need to add your Firebase project configuration keys here. You can get these from the Firebase console.
+    Create a `.env.local` file in the root of the project by copying the example from `.env`. You will need to add your Firebase project configuration keys and Gemini API Key here.
     ```
-    # Firebase Config Keys
-    NEXT_PUBLIC_FIREBASE_API_KEY="YOUR_API_KEY"
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="YOUR_AUTH_DOMAIN"
-    # ... and so on for the rest of your firebase config.
+    # .env.local
 
-    # Genkit/Gemini API Key
+    # Your Firebase Web App's API Key
+    NEXT_PUBLIC_FIREBASE_API_KEY="YOUR_FIREBASE_WEB_API_KEY"
+
+    # Your Gemini API Key from Google AI Studio
     GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
     ```
 
@@ -121,3 +121,11 @@ To get a local copy up and running, follow these simple steps.
     ```
 
 Open [http://localhost:9002](http://localhost:9002) with your browser to see the result.
+
+### Deploying to Vercel
+
+When deploying to Vercel, you must set the environment variables in the Vercel project settings:
+1.  Go to your project's **Settings > Environment Variables**.
+2.  Add `NEXT_PUBLIC_FIREBASE_API_KEY` with the API key from your Firebase web app config.
+3.  Add `GEMINI_API_KEY` with your Gemini API key.
+4.  Redeploy the application for the changes to take effect.
