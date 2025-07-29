@@ -76,7 +76,7 @@ export function ChatbotInterface() {
              <Card className="p-6 text-center">
                 <CardContent className="pt-6">
                     <Logo className="mx-auto size-12 text-primary/80" />
-                    <h2 className="mt-4 text-2xl font-semibold">Welcome to AfyaBot</h2>
+                    <h2 className="mt-4 text-2xl font-semibold">Welcome to Afya.Ai</h2>
                     <p className="mt-2 text-muted-foreground">
                         How can I help you today?
                     </p>

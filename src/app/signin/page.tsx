@@ -53,7 +53,7 @@ export default function SignInPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Welcome Back!</CardTitle>
-          <CardDescription>Sign in to your AfyaBot account</CardDescription>
+          <CardDescription>Sign in to your Afya.Ai account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

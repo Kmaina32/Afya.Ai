@@ -28,9 +28,14 @@ export function AppSidebar() {
   return (
     <>
       <SidebarHeader>
-        <Link href="/chatbot" className="flex items-center gap-2 p-2">
-          <Logo className="size-8 text-primary" />
-          <span className={cn('text-xl font-semibold', 'group-data-[collapsible=icon]:hidden')}>AfyaBot</span>
+        <Link href="/chatbot" className="flex flex-col items-center gap-2 p-2 text-center">
+          <div className="flex items-center gap-2">
+            <Logo className="size-8 text-primary" />
+            <span className={cn('text-xl font-semibold', 'group-data-[collapsible=icon]:hidden')}>Afya.Ai</span>
+          </div>
+          <div className={cn('text-xs text-muted-foreground', 'group-data-[collapsible=icon]:hidden')}>
+            by Milleast.tech
+          </div>
         </Link>
       </SidebarHeader>
       <SidebarContent>
