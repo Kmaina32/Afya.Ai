@@ -11,3 +11,4 @@ import '@/ai/flows/summarizer.ts';
 import '@/ai/flows/first-aid.ts';
 import '@/ai/flows/outbreak-alert.ts';
 import '@/ai/flows/search-navigator.ts';
+import '@/ai/flows/scan-analyzer.ts';
