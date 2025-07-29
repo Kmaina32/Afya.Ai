@@ -1,6 +1,7 @@
 'use client';
 
 import { AppSidebar } from '@/components/app-sidebar';
+import { MobileHeader } from '@/components/mobile-header';
 import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState } from 'react';
@@ -20,9 +21,12 @@ export default function MainLayout({
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
-        {isClient || isMobile ? <AppSidebar /> : null}
+        <AppSidebar />
       </Sidebar>
-      <SidebarInset>{children}</SidebarInset>
+      <div className="flex flex-1 flex-col">
+        {isClient && isMobile && <MobileHeader />}
+        <SidebarInset>{children}</SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }
