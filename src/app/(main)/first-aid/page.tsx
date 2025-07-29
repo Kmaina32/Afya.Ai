@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef } from 'react';
@@ -11,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Paperclip, X, Image as ImageIcon, Volume2, Info, AlertTriangle } from 'lucide-react';
+import { Loader2, Paperclip, X, Image as ImageIcon, Volume2, Info, AlertTriangle, VolumeUp } from 'lucide-react';
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AudioPlayer } from '@/components/audio-player';
@@ -58,6 +59,7 @@ export default function FirstAidPage() {
   
   const handlePlayAudio = async (text: string) => {
     setIsPlaying(true);
+    setAudioDataUri(null);
     try {
       const { audioDataUri } = await textToSpeech({ text });
       setAudioDataUri(audioDataUri);
@@ -70,6 +72,14 @@ export default function FirstAidPage() {
       });
       setIsPlaying(false);
     }
+  };
+  
+  const handlePlayAllAudio = async () => {
+    if (!result || !result.guidance) return;
+    const allInstructions = result.guidance
+      .map(step => `Step ${step.step}. ${step.instruction}`)
+      .join(' \n');
+    await handlePlayAudio(allInstructions);
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -190,8 +200,12 @@ export default function FirstAidPage() {
 
       {result && (
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Step-by-Step Guidance</CardTitle>
+            <Button variant="secondary" onClick={handlePlayAllAudio} disabled={isPlaying}>
+                <VolumeUp className="mr-2 h-4 w-4" />
+                Play All
+            </Button>
           </CardHeader>
           <CardContent className="space-y-6">
             <Alert variant="default" className="bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800">
