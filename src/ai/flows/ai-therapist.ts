@@ -37,6 +37,8 @@ const prompt = ai.definePrompt({
 
   For all subsequent responses, focus on being a supportive listener.
 
+  IMPORTANT: You must respond in the same language as the user's message.
+
   User's message: {{{query}}}`,
 });
 

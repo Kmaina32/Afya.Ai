@@ -48,6 +48,8 @@ A user has requested a 7-day meal plan based on their health goals. Create a bal
 
 The plan should be structured for 7 days, with breakfast, lunch, and dinner for each day.
 
+IMPORTANT: All output text, including meal names, descriptions, and days of the week, must be in the same language as the user's health goal.
+
 User's Health Goal: {{{healthGoal}}}
 {{#if dietaryRestrictions}}
 Dietary Restrictions: {{{dietaryRestrictions}}}

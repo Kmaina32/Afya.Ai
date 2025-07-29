@@ -44,6 +44,8 @@ You MUST start with a disclaimer: "IMPORTANT: This is not a substitute for profe
 
 Analyze the situation and the provided image (if any) to give appropriate guidance.
 
+IMPORTANT: You must respond in the same language as the user's situation description.
+
 User's Situation: {{{situation}}}
 {{#if photoDataUri}}
 Image: {{media url=photoDataUri}}

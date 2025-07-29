@@ -35,6 +35,8 @@ const symptomCheckerPrompt = ai.definePrompt({
 
   The user will provide a comma-separated list of symptoms. You should provide a comma-separated list of possible conditions that could be causing these symptoms. Ensure the list is concise and relevant.
 
+  IMPORTANT: You must respond in the same language as the user's symptoms.
+
   Symptoms: {{{symptoms}}}
   Possible Conditions:`, // Adjusted prompt to request comma-separated conditions
 });

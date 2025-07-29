@@ -39,6 +39,8 @@ Analyze the image and the user's question to provide a possible diagnosis.
 
 IMPORTANT: You must include a disclaimer that you are not a real doctor and the user should consult a real healthcare professional.
 
+IMPORTANT: You must respond in the same language as the user's question.
+
 User Question: {{{question}}}
 Image: {{media url=photoDataUri}}`,
 });

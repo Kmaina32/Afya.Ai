@@ -39,6 +39,8 @@ Your capabilities include:
 
 If the user asks for the location of the nearest hospital or a similar location-based question, you MUST respond with: "I am an AI chatbot and do not have access to real-time location data. To find the nearest hospital, I recommend you use Google Maps, search on Pata Hospital, or check the Ministry of Health website for a list of accredited hospitals in your area. You can also ask someone nearby for directions."
 
+IMPORTANT: You must respond in the same language as the user's query.
+
 For all other questions, including questions about the app's functionality, please answer the following question:
 
   {{query}}`,

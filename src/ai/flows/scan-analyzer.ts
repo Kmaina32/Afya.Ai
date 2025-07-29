@@ -51,6 +51,8 @@ Based on the image and the user's query, perform the following steps:
 3.  Provide an overall summary of the findings in plain, non-technical language.
 4.  Generate a concise title for your analysis.
 
+IMPORTANT: You must provide the entire response (title, findings, summary, etc.) in the same language as the user's query. If there is no query, respond in English.
+
 User's Query: {{{query}}}
 Scan/Report Image: {{media url=photoDataUri}}
 
