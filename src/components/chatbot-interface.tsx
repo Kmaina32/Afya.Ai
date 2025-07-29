@@ -4,16 +4,21 @@ import { useState, useRef, useEffect, type FormEvent } from 'react';
 import { healthQueryChatbot, type HealthQueryChatbotOutput } from '@/ai/flows/health-query-chatbot';
 import { imageDiagnosis, type ImageDiagnosisOutput } from '@/ai/flows/image-diagnosis';
 import { textToSpeech, type TextToSpeechOutput } from '@/ai/flows/tts';
+import { consultationSummarizer, type ConsultationSummarizerOutput } from '@/ai/flows/summarizer';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { SendHorizonal, User, Bot, Paperclip, X, Mic, Square, Speaker } from 'lucide-react';
+import { SendHorizonal, User, Bot, Paperclip, X, Mic, Square, Speaker, FileText, Loader2 } from 'lucide-react';
 import { Logo } from '@/components/icons/logo';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from "@/hooks/use-toast";
 import Image from 'next/image';
 import { AudioPlayer } from './audio-player';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { db } from '@/lib/firebase';
+import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 
 
 type Message = {
@@ -22,6 +27,12 @@ type Message = {
   content: string;
   image?: string;
 };
+
+type AlertContent = {
+    id: string;
+    title: string;
+    announcement: string;
+}
 
 const CHAT_HISTORY_KEY = 'chatHistory';
 
@@ -34,12 +45,29 @@ export function ChatbotInterface() {
   const [isRecording, setIsRecording] = useState(false);
   const [audioDataUri, setAudioDataUri] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [summary, setSummary] = useState<ConsultationSummarizerOutput | null>(null);
+  const [isSummarizing, setIsSummarizing] = useState(false);
+  const [activeAlert, setActiveAlert] = useState<AlertContent | null>(null);
   
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
 
   const { toast } = useToast();
+
+   useEffect(() => {
+    const q = query(collection(db, "alerts"), where("isActive", "==", true));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      if (!querySnapshot.empty) {
+        const alertDoc = querySnapshot.docs[0];
+        setActiveAlert({ id: alertDoc.id, ...alertDoc.data() as Omit<AlertContent, 'id'> });
+      } else {
+        setActiveAlert(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     try {
@@ -171,10 +199,30 @@ export function ChatbotInterface() {
       setIsPlaying(false);
     }
   };
+
+  const handleSummarize = async () => {
+      setIsSummarizing(true);
+      try {
+          const historyToSummarize = messages.filter(m => m.id !== 'initial-message').map(({ role, content }) => ({ role, content }));
+          const result = await consultationSummarizer({ history: historyToSummarize });
+          setSummary(result);
+      } catch(error) {
+          console.error(error);
+          toast({
+              title: "Summarization Failed",
+              description: "Could not generate a summary. Please try again.",
+              variant: "destructive",
+          });
+      } finally {
+          setIsSummarizing(false);
+      }
+  }
   
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!inputValue.trim() && !imageData) return;
+
+    setSummary(null);
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -233,6 +281,17 @@ export function ChatbotInterface() {
           }} 
         />
       )}
+
+      {activeAlert && (
+        <Alert variant="destructive" className="animate-in fade-in-50">
+            <Siren className="h-4 w-4" />
+            <AlertTitle>{activeAlert.title}</AlertTitle>
+            <AlertDescription>
+                {activeAlert.announcement}
+            </AlertDescription>
+        </Alert>
+      )}
+
       <ScrollArea className="flex-1" ref={scrollAreaRef}>
         <div className="space-y-6 pr-4">
           {messages.length === 1 && messages[0].id === 'initial-message' && !imagePreview && (
@@ -312,7 +371,42 @@ export function ChatbotInterface() {
           )}
         </div>
       </ScrollArea>
-      <div className="border-t pt-4">
+      <div className="border-t pt-4 space-y-3">
+        {messages.length > 1 && !isLoading && (
+          <div className="flex justify-end">
+            <Dialog>
+                 <DialogTrigger asChild>
+                    <Button variant="secondary" onClick={handleSummarize} disabled={isSummarizing}>
+                        {isSummarizing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />}
+                        Generate Summary
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Consultation Summary</DialogTitle>
+                    </DialogHeader>
+                    {summary ? (
+                         <div className="space-y-4">
+                            <div>
+                                <h3 className="font-semibold">Summary</h3>
+                                <p className="text-sm text-muted-foreground">{summary.summary}</p>
+                            </div>
+                             <div>
+                                <h3 className="font-semibold">Action Plan</h3>
+                                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                                    {summary.actionPlan.map((item, i) => <li key={i}>{item}</li>)}
+                                </ul>
+                            </div>
+                        </div>
+                    ) : (
+                         <div className="flex items-center justify-center p-10">
+                            <p>Your summary will appear here once generated.</p>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+          </div>
+        )}
         {imagePreview && (
           <div className="relative w-32 h-32 mb-2">
             <Image src={imagePreview} alt="Image preview" layout="fill" className="rounded-md object-cover" />
