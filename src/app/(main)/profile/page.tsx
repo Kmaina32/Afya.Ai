@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -195,7 +196,7 @@ export default function ProfilePage() {
                             <Button
                                 variant={"outline"}
                                 className={cn(
-                                "w-full md:w-[280px] justify-start text-left font-normal",
+                                "w-full sm:w-[280px] justify-start text-left font-normal",
                                 !field.value && "text-muted-foreground"
                                 )}
                             >

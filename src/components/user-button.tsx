@@ -1,10 +1,12 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { User, LogIn, LogOut, Settings } from 'lucide-react';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import type { User as FirebaseUser } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,11 +21,24 @@ import { Skeleton } from './ui/skeleton';
 
 export function UserButton() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [profileName, setProfileName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        // Fetch profile name from Firestore
+        const profileRef = doc(db, 'profiles', currentUser.uid);
+        const docSnap = await getDoc(profileRef);
+        if (docSnap.exists() && docSnap.data().name) {
+          setProfileName(docSnap.data().name);
+        } else {
+            setProfileName(null);
+        }
+      } else {
+        setProfileName(null);
+      }
       setIsLoading(false);
     });
     return () => unsubscribe();
@@ -53,7 +68,7 @@ export function UserButton() {
                 <User />
               </AvatarFallback>
             </Avatar>
-            <span className="ml-2 group-data-[collapsible=icon]:hidden">{user.displayName || user.email}</span>
+            <span className="ml-2 group-data-[collapsible=icon]:hidden">{profileName || user.displayName || user.email}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="right" align="start" className="w-56">

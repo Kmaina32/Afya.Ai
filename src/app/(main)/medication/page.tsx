@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -170,7 +171,7 @@ export default function MedicationPage() {
                   render={({ field }) => (
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant={"outline"} className={cn("w-[240px] justify-start text-left font-normal", !field.value && "text-muted-foreground")}>
+                        <Button variant={"outline"} className={cn("w-full sm:w-[240px] justify-start text-left font-normal", !field.value && "text-muted-foreground")}>
                           <Clock className="mr-2 h-4 w-4" />
                           {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                         </Button>
@@ -201,7 +202,7 @@ export default function MedicationPage() {
           {medications.length > 0 ? (
             <div className="space-y-4">
               {medications.map((med) => (
-                <div key={med.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                <div key={med.id} className="flex items-center justify-between p-3 bg-muted rounded-lg flex-wrap">
                   <div className="flex items-center gap-4">
                     <Pill className="h-6 w-6 text-primary" />
                     <div>
