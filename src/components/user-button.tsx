@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { User, LogIn, LogOut, Settings } from 'lucide-react';
+import { User, LogIn, LogOut, Settings, Languages, Check } from 'lucide-react';
 import { auth, db } from '@/lib/firebase';
 import type { User as FirebaseUser } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -14,15 +14,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from './ui/skeleton';
+import { useLanguage, languages } from '@/hooks/use-language';
+import { useTranslation } from '@/hooks/use-translation';
+
 
 export function UserButton() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
@@ -72,18 +82,34 @@ export function UserButton() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="right" align="start" className="w-56">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>{t('my_account')}</DropdownMenuLabel>
           <DropdownMenuSeparator />
            <DropdownMenuItem asChild>
             <Link href="/profile">
               <Settings className="mr-2 h-4 w-4" />
-              <span>Profile Settings</span>
+              <span>{t('profile_settings')}</span>
             </Link>
           </DropdownMenuItem>
+           <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Languages className="mr-2 h-4 w-4" />
+              <span>{t('language')}</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                {Object.entries(languages).map(([code, name]) => (
+                  <DropdownMenuItem key={code} onSelect={() => setLanguage(code)}>
+                    {language === code && <Check className="mr-2 h-4 w-4" />}
+                    <span>{name}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
+            <span>{t('log_out')}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -94,7 +120,7 @@ export function UserButton() {
     <Button asChild variant="ghost" className="w-full justify-start p-2">
       <Link href="/signin">
          <LogIn className="h-5 w-5" />
-         <span className="ml-2 group-data-[collapsible=icon]:hidden">Sign In</span>
+         <span className="ml-2 group-data-[collapsible=icon]:hidden">{t('sign_in')}</span>
       </Link>
     </Button>
   );

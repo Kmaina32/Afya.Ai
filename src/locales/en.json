@@ -1,0 +1,21 @@
+
+{
+  "ai_health_chatbot": "AI Health Chatbot",
+  "symptom_checker": "Symptom Checker",
+  "ai_therapist": "AI Therapist",
+  "ai_nutritionist": "AI Nutritionist",
+  "first_aid_assistant": "First-Aid Assistant",
+  "medication_tracker": "Medication Tracker",
+  "lab_analyzer": "Lab Analyzer",
+  "vaccination_tracker": "Vaccination Tracker",
+  "health_resources": "Health Resources",
+  "healthcare_directory": "Healthcare Directory",
+  "emergency_services": "Emergency Services",
+  "your_profile": "Your Profile",
+  "admin_panel": "Admin Panel",
+  "my_account": "My Account",
+  "profile_settings": "Profile Settings",
+  "language": "Language",
+  "log_out": "Log out",
+  "sign_in": "Sign In"
+}

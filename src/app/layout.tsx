@@ -1,6 +1,8 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
+import { LanguageProvider } from '@/hooks/use-language';
 
 export const metadata: Metadata = {
   title: 'Afya.Ai',
@@ -20,8 +22,10 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        {children}
-        <Toaster />
+        <LanguageProvider>
+            {children}
+            <Toaster />
+        </LanguageProvider>
       </body>
     </html>
   );
