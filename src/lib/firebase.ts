@@ -4,9 +4,9 @@ import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyB7Kg9cWw5ryaOayB-EpO89exgGtillsDc",
-  authDomain: "afyabot-b2wf1.firebaseapp.com",
-  projectId: "afyabot-b2wf1",
-  storageBucket: "afyabot-b2wf1.firebasestorage.app",
+  authDomain: "afyabot-467412.firebaseapp.com",
+  projectId: "afyabot-467412",
+  storageBucket: "afyabot-467412.appspot.com",
   messagingSenderId: "226086476007",
   appId: "1:226086476007:web:7b12e9393592a03c5bea42",
   measurementId: ""
