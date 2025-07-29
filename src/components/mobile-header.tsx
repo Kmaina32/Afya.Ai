@@ -14,6 +14,8 @@ import { searchNavigator } from '@/ai/flows/search-navigator';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useNotificationPermission } from '@/hooks/use-notification-permission';
+import { ThemeToggle } from './theme-toggle';
+import { useTranslation } from '@/hooks/use-translation';
 
 export function MobileHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -22,6 +24,7 @@ export function MobileHeader() {
   const router = useRouter();
   const { toast } = useToast();
   const { handleRequestPermission, isPermissionLoading } = useNotificationPermission();
+  const { t } = useTranslation();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,8 +42,8 @@ export function MobileHeader() {
     } catch (error) {
       console.error("Search failed:", error);
       toast({
-        title: 'Search Not Available',
-        description: 'Navigating you to the chatbot instead.',
+        title: t('search_failed_title'),
+        description: t('search_failed_description'),
         variant: 'destructive',
       });
       router.push('/chatbot');
@@ -54,7 +57,7 @@ export function MobileHeader() {
       {isSearchOpen ? (
         <form onSubmit={handleSearch} className="flex-1 flex items-center gap-2">
           <Input 
-            placeholder="Go to..."
+            placeholder={t('go_to_placeholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="h-10"
@@ -77,7 +80,8 @@ export function MobileHeader() {
              <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)}>
                 <Search />
              </Button>
-              <Button variant="ghost" size="icon" onClick={handleRequestPermission} disabled={isPermissionLoading}>
+             <ThemeToggle />
+              <Button variant="ghost" size="icon" onClick={handleRequestPermission} disabled={isPermissionLoading} title={t('enable_notifications')}>
                 {isPermissionLoading ? <Loader2 className="animate-spin" /> : <Bell />}
               </Button>
             <UserButton />

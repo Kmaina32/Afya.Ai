@@ -7,6 +7,7 @@ import { Phone, MapPin } from "lucide-react"
 import { countyFacilities } from "@/lib/directory-data";
 import Link from "next/link";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from '@/hooks/use-translation';
 
 type Facility = {
   name: string;
@@ -18,6 +19,7 @@ type Facility = {
 
 export default function DirectoryPage() {
   const [selectedCounty, setSelectedCounty] = useState("All");
+  const { t } = useTranslation();
 
   const allFacilities: Facility[] = useMemo(() => {
     return countyFacilities.flatMap(county => 
@@ -45,18 +47,18 @@ export default function DirectoryPage() {
     <div className="p-4 md:p-6 space-y-4">
       <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h1 className="text-3xl font-bold">Healthcare Directory</h1>
+            <h1 className="text-3xl font-bold">{t('healthcare_directory')}</h1>
             <p className="text-muted-foreground mt-1">
-              Find health facilities across Kenya.
+              {t('directory_description')}
             </p>
         </div>
         <div className="w-full md:w-64">
             <Select onValueChange={setSelectedCounty} defaultValue="All">
                 <SelectTrigger>
-                    <SelectValue placeholder="Select a county" />
+                    <SelectValue placeholder={t('select_county')} />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="All">All Counties</SelectItem>
+                    <SelectItem value="All">{t('all_counties')}</SelectItem>
                     {countyFacilities.map((county) => (
                         <SelectItem key={county.county} value={county.county}>
                             {county.county}
@@ -76,7 +78,7 @@ export default function DirectoryPage() {
             </CardHeader>
             <CardContent className="space-y-3 flex-grow flex flex-col justify-end">
               <div className="space-y-2">
-                 <p className="text-sm font-medium text-primary">{facility.county} County</p>
+                 <p className="text-sm font-medium text-primary">{facility.county} {t('county')}</p>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4 flex-shrink-0" />
                   <span>{facility.location}</span>
@@ -89,11 +91,11 @@ export default function DirectoryPage() {
               <div className="flex flex-col sm:flex-row gap-2 pt-4">
                 <Button asChild variant="outline" className="w-full">
                   <Link href={`tel:${facility.phone}`}>
-                    <Phone className="mr-2 h-4 w-4" /> Call Now
+                    <Phone className="mr-2 h-4 w-4" /> {t('call_now')}
                   </Link>
                 </Button>
                 <Button className="w-full" onClick={() => handleDirections(facility.name, facility.location)}>
-                  Get Directions
+                  {t('get_directions')}
                 </Button>
               </div>
             </CardContent>
@@ -102,7 +104,7 @@ export default function DirectoryPage() {
       </div>
        {filteredFacilities.length === 0 && selectedCounty !== "All" && (
          <div className="text-center py-10">
-            <p className="text-muted-foreground">No facilities found for {selectedCounty} county in our directory yet.</p>
+            <p className="text-muted-foreground">{t('no_facilities_found')} {selectedCounty} {t('county_in_directory')}</p>
          </div>
       )}
     </div>

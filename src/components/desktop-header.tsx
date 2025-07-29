@@ -9,6 +9,8 @@ import { searchNavigator } from '@/ai/flows/search-navigator';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useNotificationPermission } from '@/hooks/use-notification-permission';
+import { ThemeToggle } from './theme-toggle';
+import { useTranslation } from '@/hooks/use-translation';
 
 export function DesktopHeader() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,6 +18,7 @@ export function DesktopHeader() {
   const router = useRouter();
   const { toast } = useToast();
   const { handleRequestPermission, isPermissionLoading } = useNotificationPermission();
+  const { t } = useTranslation();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +35,8 @@ export function DesktopHeader() {
     } catch (error) {
       console.error("Search failed:", error);
       toast({
-        title: 'Search Not Available',
-        description: 'Navigating you to the chatbot instead.',
+        title: t('search_failed_title'),
+        description: t('search_failed_description'),
         variant: 'destructive',
       });
       router.push('/chatbot');
@@ -48,7 +51,7 @@ export function DesktopHeader() {
             <form onSubmit={handleSearch} className="relative w-full max-w-md">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input 
-                    placeholder="Search features..."
+                    placeholder={t('search_placeholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-8 h-10 w-full"
@@ -59,7 +62,8 @@ export function DesktopHeader() {
             </form>
         </div>
         <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={handleRequestPermission} disabled={isPermissionLoading}>
+            <ThemeToggle />
+            <Button variant="ghost" size="icon" onClick={handleRequestPermission} disabled={isPermissionLoading} title={t('enable_notifications')}>
               {isPermissionLoading ? <Loader2 className="animate-spin" /> : <Bell />}
             </Button>
         </div>
