@@ -176,7 +176,7 @@ export default function ProfilePage() {
                             <Button
                                 variant={"outline"}
                                 className={cn(
-                                "w-[280px] justify-start text-left font-normal",
+                                "w-full md:w-[280px] justify-start text-left font-normal",
                                 !field.value && "text-muted-foreground"
                                 )}
                             >
@@ -187,6 +187,9 @@ export default function ProfilePage() {
                             <PopoverContent className="w-auto p-0">
                                 <Calendar
                                     mode="single"
+                                    captionLayout="dropdown-buttons"
+                                    fromYear={1900}
+                                    toYear={new Date().getFullYear()}
                                     selected={field.value}
                                     onSelect={field.onChange}
                                     initialFocus
