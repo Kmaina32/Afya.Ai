@@ -23,6 +23,8 @@ const validPaths = [
   '/admin',
   '/medication',
   '/lab-results',
+  '/vaccination-tracker',
+  '/pregnancy-tracker',
 ];
 
 const SearchNavigatorInputSchema = z.object({
@@ -60,10 +62,12 @@ const prompt = ai.definePrompt({
   - '/admin': Admin panel for managing alerts.
   - '/medication': Track and get reminders for medication.
   - '/lab-results': Analyze lab results, X-rays, and other scans.
+  - '/vaccination-tracker': Track child immunizations.
+  - '/pregnancy-tracker': Track pregnancy progress week by week.
 
   User Query: "{{{query}}}"
 
-  Based on the query, select the most appropriate path. For example, if the user asks "analyze my xray", the best path is '/lab-results'. If they ask "remind me to take my pills", the best path is '/medication'.
+  Based on the query, select the most appropriate path. For example, if the user asks "when is my baby due", the best path is '/pregnancy-tracker'.
 
   IMPORTANT: If the query is unclear or does not match any of the pages, you MUST return "/chatbot" as the default path.
   `,

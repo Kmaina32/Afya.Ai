@@ -3,7 +3,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, Hospital, MessageSquare, Stethoscope, User, Siren, Heart, Leaf, LifeBuoy, Shield, Pill, FileScan, Baby } from 'lucide-react';
+import { BookOpen, Hospital, MessageSquare, Stethoscope, User, Siren, Heart, Leaf, LifeBuoy, Shield, Pill, FileScan, Baby, HeartPulse } from 'lucide-react';
 import {
   SidebarHeader,
   SidebarContent,
@@ -34,6 +34,7 @@ export function AppSidebar() {
     { href: '/medication', label: t('medication_tracker'), icon: Pill },
     { href: '/lab-results', label: t('lab_analyzer'), icon: FileScan },
     { href: '/vaccination-tracker', label: t('vaccination_tracker'), icon: Baby },
+    { href: '/pregnancy-tracker', label: t('pregnancy_tracker'), icon: HeartPulse },
     { href: '/resources', label: t('health_resources'), icon: BookOpen },
     { href: '/directory', label: t('healthcare_directory'), icon: Hospital },
     { href: '/emergency', label: t('emergency_services'), icon: Siren },
