@@ -50,7 +50,7 @@ export default function EmergencyPage() {
                         </Button>
                         )}
                     </CardContent>
-                    </Card>>
+                    </Card>
                 ))}
                 </div>
             </AccordionContent>
