@@ -9,10 +9,10 @@ import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { Logo } from '@/components/icons/logo';
 
 
 const formSchema = z.object({
@@ -49,21 +49,35 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome Back!</CardTitle>
-          <CardDescription>Sign in to your Afya.Ai account</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
+    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
+      <div className="hidden bg-muted lg:flex lg:items-center lg:justify-center relative">
+        <div 
+          className="absolute inset-0 bg-cover bg-center" 
+          style={{backgroundImage: "url('https://placehold.co/1200x800.png')", opacity: 0.2}}
+          data-ai-hint="kenyan healthcare"
+        ></div>
+        <div className="relative z-10 text-center p-8">
+           <Logo className="mx-auto size-24 text-primary" />
+           <h1 className="text-4xl font-bold mt-4">Welcome Back to Afya.Ai</h1>
+           <p className="text-muted-foreground mt-2 text-lg">Your trusted partner in health.</p>
+        </div>
+      </div>
+      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto grid w-[350px] gap-6">
+          <div className="grid gap-2 text-center">
+            <h1 className="text-3xl font-bold">Sign In</h1>
+            <p className="text-balance text-muted-foreground">
+              Enter your email below to login to your account
+            </p>
+          </div>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+            <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" placeholder="m@example.com" {...form.register('email')} />
               {form.formState.errors.email && <p className="text-sm text-destructive">{form.formState.errors.email.message}</p>}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" {...form.register('password')} />
                {form.formState.errors.password && <p className="text-sm text-destructive">{form.formState.errors.password.message}</p>}
             </div>
@@ -72,14 +86,14 @@ export default function SignInPage() {
               Sign In
             </Button>
           </form>
-           <div className="mt-4 text-center text-sm">
-            Don't have an account?{' '}
+          <div className="mt-4 text-center text-sm">
+            Don&apos;t have an account?{' '}
             <Link href="/signup" className="underline">
               Sign up
             </Link>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
