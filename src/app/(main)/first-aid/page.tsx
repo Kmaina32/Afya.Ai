@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Paperclip, X, Image as ImageIcon, Volume2, Info, AlertTriangle, VolumeUp } from 'lucide-react';
+import { Loader2, Paperclip, X, Image as ImageIcon, Volume2, Info, AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AudioPlayer } from '@/components/audio-player';
@@ -203,7 +203,7 @@ export default function FirstAidPage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Step-by-Step Guidance</CardTitle>
             <Button variant="secondary" onClick={handlePlayAllAudio} disabled={isPlaying}>
-                <VolumeUp className="mr-2 h-4 w-4" />
+                <Volume2 className="mr-2 h-4 w-4" />
                 Play All
             </Button>
           </CardHeader>
