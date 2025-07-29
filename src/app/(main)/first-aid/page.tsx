@@ -14,7 +14,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Paperclip, X, Image as ImageIcon, Volume2, Info, AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AudioPlayer } from '@/components/ui/audio-player';
+import { AudioPlayer } from '@/components/audio-player';
+import { Label } from '@/components/ui/label';
 
 const formSchema = z.object({
   situation: z.string().min(5, 'Please describe the situation in more detail.'),
