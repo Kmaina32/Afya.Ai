@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,21 +31,48 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(auth.currentUser);
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(setUser);
-    return () => unsubscribe();
-  }, []);
-  
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: user?.displayName || '',
-      location: '', // Will be filled by location API
+      location: '',
       nextOfKin: '',
       phone: user?.phoneNumber || '',
     },
   });
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        setIsLoading(true);
+        const profileRef = doc(db, 'profiles', currentUser.uid);
+        getDoc(profileRef).then((docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            form.reset({
+              name: data.name || currentUser.displayName || '',
+              dob: data.dob ? data.dob.toDate() : undefined,
+              location: data.location || '',
+              nextOfKin: data.nextOfKin || '',
+              phone: data.phone || currentUser.phoneNumber || '',
+            });
+          } else {
+             form.reset({
+              name: currentUser.displayName || '',
+              location: '',
+              nextOfKin: '',
+              phone: currentUser.phoneNumber || '',
+            });
+          }
+        }).finally(() => {
+          setIsLoading(false);
+        });
+      }
+    });
+    return () => unsubscribe();
+  }, [form]);
+  
   const handleLocationRequest = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -77,18 +105,29 @@ export default function ProfilePage() {
   };
 
   const onSubmit = async (values: ProfileFormValues) => {
+    if (!user) return;
     setIsLoading(true);
-    // Here you would typically save the profile data to Firestore
-    // associated with the user's UID.
-    console.log(values);
-     toast({
-      title: "Profile Updated",
-      description: "Your information has been saved successfully.",
-    });
-    setIsLoading(false);
+    
+    try {
+      const profileRef = doc(db, 'profiles', user.uid);
+      await setDoc(profileRef, values, { merge: true });
+      toast({
+        title: "Profile Updated",
+        description: "Your information has been saved successfully.",
+      });
+    } catch (error) {
+       toast({
+        title: "Update Failed",
+        description: "Could not save your profile. Please try again.",
+        variant: "destructive",
+      });
+      console.error("Error updating profile: ", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  if (!user) {
+  if (!user && !isLoading) {
     return (
         <div className="p-4 md:p-6 flex items-center justify-center h-full">
             <Card className="w-full max-w-md">
