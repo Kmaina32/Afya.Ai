@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import type { User } from 'firebase/auth';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -28,16 +29,16 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState(auth.currentUser);
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(auth.currentUser);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: user?.displayName || '',
+      name: '',
       location: '',
       nextOfKin: '',
-      phone: user?.phoneNumber || '',
+      phone: '',
     },
   });
 
@@ -45,7 +46,6 @@ export default function ProfilePage() {
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        setIsLoading(true);
         const profileRef = doc(db, 'profiles', currentUser.uid);
         getDoc(profileRef).then((docSnap) => {
           if (docSnap.exists()) {
@@ -60,6 +60,7 @@ export default function ProfilePage() {
           } else {
              form.reset({
               name: currentUser.displayName || '',
+              dob: undefined,
               location: '',
               nextOfKin: '',
               phone: currentUser.phoneNumber || '',
@@ -68,6 +69,8 @@ export default function ProfilePage() {
         }).finally(() => {
           setIsLoading(false);
         });
+      } else {
+        setIsLoading(false);
       }
     });
     return () => unsubscribe();
@@ -105,7 +108,15 @@ export default function ProfilePage() {
   };
 
   const onSubmit = async (values: ProfileFormValues) => {
-    if (!user) return;
+    if (!user) {
+         toast({
+            title: "Not Signed In",
+            description: "You must be signed in to update your profile.",
+            variant: "destructive",
+        });
+        return;
+    };
+
     setIsLoading(true);
     
     try {
@@ -127,7 +138,15 @@ export default function ProfilePage() {
     }
   };
   
-  if (!user && !isLoading) {
+  if (isLoading) {
+     return (
+        <div className="p-4 md:p-6 flex items-center justify-center h-full">
+            <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+    )
+  }
+
+  if (!user) {
     return (
         <div className="p-4 md:p-6 flex items-center justify-center h-full">
             <Card className="w-full max-w-md">
@@ -221,8 +240,8 @@ export default function ProfilePage() {
               <Input id="nextOfKin" {...form.register('nextOfKin')} placeholder="Name and phone number" />
             </div>
 
-            <Button type="submit" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" disabled={isLoading || form.formState.isSubmitting}>
+              {(isLoading || form.formState.isSubmitting) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save Changes
             </Button>
           </form>
