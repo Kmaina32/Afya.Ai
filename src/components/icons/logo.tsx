@@ -1,6 +1,8 @@
 import React from 'react';
 import { Stethoscope } from 'lucide-react';
 
-export function Logo(props: React.SVGProps<SVGSVGElement>) {
-  return <Stethoscope {...props} />;
-}
+export const Logo = React.forwardRef<SVGSVGElement, React.SVGProps<SVGSVGElement>>((props, ref) => {
+  return <Stethoscope {...props} ref={ref} />;
+});
+
+Logo.displayName = 'Logo';
