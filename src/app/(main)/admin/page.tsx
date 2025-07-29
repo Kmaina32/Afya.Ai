@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAdmin } from '@/hooks/use-admin';
@@ -72,15 +73,25 @@ export default function AdminPage() {
             return;
           }
 
-          await addDoc(collection(db, "alerts"), {
+          // Publish the alert for in-app display
+          const alertRef = await addDoc(collection(db, "alerts"), {
             ...generatedAlert,
             isActive: true,
             createdAt: serverTimestamp(),
           });
+          
+          // Add notification to trigger backend function
+           await addDoc(collection(db, "notifications"), {
+            alertId: alertRef.id,
+            title: generatedAlert.title,
+            body: generatedAlert.announcement.substring(0, 150) + '...', // Keep body brief
+            createdAt: serverTimestamp(),
+          });
+
 
           toast({
             title: "Alert Published",
-            description: "The outbreak alert is now live in the app.",
+            description: "The outbreak alert is now live and a notification has been sent.",
           });
           setGeneratedAlert(null);
           form.reset();
@@ -183,7 +194,7 @@ export default function AdminPage() {
                              <p className="text-sm whitespace-pre-wrap">{generatedAlert.announcement}</p>
                              <Button onClick={handlePublishAlert} disabled={isPublishing} className="w-full">
                                 {isPublishing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Publish Alert
+                                Publish Alert & Send Notification
                              </Button>
                         </div>
                     ) : (

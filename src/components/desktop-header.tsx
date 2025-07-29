@@ -8,12 +8,14 @@ import { Input } from './ui/input';
 import { searchNavigator } from '@/ai/flows/search-navigator';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { useNotificationPermission } from '@/hooks/use-notification-permission';
 
 export function DesktopHeader() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { handleRequestPermission, isPermissionLoading } = useNotificationPermission();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,8 +54,8 @@ export function DesktopHeader() {
             </form>
         </div>
         <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon">
-            <Bell />
+            <Button variant="ghost" size="icon" onClick={handleRequestPermission} disabled={isPermissionLoading}>
+              {isPermissionLoading ? <Loader2 className="animate-spin" /> : <Bell />}
             </Button>
         </div>
     </header>

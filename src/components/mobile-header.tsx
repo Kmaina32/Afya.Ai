@@ -1,3 +1,4 @@
+
 'use client';
 
 import { SidebarTrigger } from './ui/sidebar';
@@ -12,6 +13,7 @@ import { Input } from './ui/input';
 import { searchNavigator } from '@/ai/flows/search-navigator';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { useNotificationPermission } from '@/hooks/use-notification-permission';
 
 export function MobileHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -19,6 +21,7 @@ export function MobileHeader() {
   const [isSearching, setIsSearching] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { handleRequestPermission, isPermissionLoading } = useNotificationPermission();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,8 +72,8 @@ export function MobileHeader() {
              <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)}>
                 <Search />
              </Button>
-              <Button variant="ghost" size="icon">
-                <Bell />
+              <Button variant="ghost" size="icon" onClick={handleRequestPermission} disabled={isPermissionLoading}>
+                {isPermissionLoading ? <Loader2 className="animate-spin" /> : <Bell />}
               </Button>
             <UserButton />
           </div>
