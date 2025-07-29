@@ -3,7 +3,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, Hospital, MessageSquare, Stethoscope, User, Siren, Heart, Leaf, LifeBuoy, Shield } from 'lucide-react';
+import { BookOpen, Hospital, MessageSquare, Stethoscope, User, Siren, Heart, Leaf, LifeBuoy, Shield, Pill } from 'lucide-react';
 import {
   SidebarHeader,
   SidebarContent,
@@ -26,6 +26,7 @@ const links = [
   { href: '/therapist', label: 'AI Therapist', icon: Heart },
   { href: '/nutritionist', label: 'AI Nutritionist', icon: Leaf },
   { href: '/first-aid', label: 'First-Aid Assistant', icon: LifeBuoy },
+  { href: '/medication', label: 'Medication Tracker', icon: Pill },
   { href: '/resources', label: 'Health Resources', icon: BookOpen },
   { href: '/directory', label: 'Healthcare Directory', icon: Hospital },
   { href: '/emergency', label: 'Emergency Services', icon: Siren },
