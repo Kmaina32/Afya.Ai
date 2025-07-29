@@ -4,40 +4,40 @@ import { Phone, MapPin } from "lucide-react"
 
 const facilities = [
   {
-    name: "Afya Bora Clinic",
-    location: "123 Afya St, Nairobi",
-    phone: "+254 712 345 678",
-    services: "General practice, vaccinations, maternity care",
+    name: "Aga Khan University Hospital, Nairobi",
+    location: "3rd Parklands Ave, Nairobi",
+    phone: "+254 20 366 2000",
+    services: "Comprehensive care, specialized clinics, 24/7 emergency",
   },
   {
-    name: "Uzima Wellness Center",
-    location: "456 Uzima Rd, Mombasa",
-    phone: "+254 723 456 789",
-    services: "Nutrition counseling, physiotherapy, lab tests",
+    name: "The Nairobi Hospital",
+    location: "Argwings Kodhek Rd, Nairobi",
+    phone: "+254 703 082 000",
+    services: "Inpatient & outpatient care, cancer center, heart institute",
   },
   {
-    name: "Jamii Hospital",
-    location: "789 Jamii Ave, Kisumu",
-    phone: "+254 734 567 890",
-    services: "Emergency services, surgery, pediatric care",
+    name: "The Karen Hospital",
+    location: "Langata - Karen Rd, Nairobi",
+    phone: "+254 726 222 000",
+    services: "Cardiac specialty, surgery, diagnostics, ICU",
   },
   {
-    name: "Maisha Medical Clinic",
-    location: "101 Maisha Ln, Nakuru",
-    phone: "+254 745 678 901",
-    services: "Dental care, general check-ups, pharmacy",
+    name: "Aga Khan Hospital, Mombasa",
+    location: "Vanga Road, Mombasa",
+    phone: "+254 41 222 7710",
+    services: "General medicine, surgery, maternity, pediatrics",
   },
    {
-    name: "Uhuru Medical Eldoret",
-    location: "22 Uhuru Drive, Eldoret",
-    phone: "+254 756 789 012",
-    services: "Community health, chronic disease management",
+    name: "The Mombasa Hospital",
+    location: "Mama Ngina Dr, Mombasa",
+    phone: "+254 722 205 650",
+    services: "24-hour emergency, intensive care unit, renal unit",
   },
    {
-    name: "Pwani Health Point",
-    location: "33 Pwani Road, Malindi",
-    phone: "+254 767 890 123",
-    services: "Tropical diseases, travel medicine, first aid",
+    name: "Jaramogi Oginga Odinga Teaching & Referral Hospital",
+    location: "Kisumu-Kakamega Road, Kisumu",
+    phone: "+254 57 202 0991",
+    services: "Public referral hospital, specialized medical training",
   },
 ];
 
@@ -47,7 +47,7 @@ export default function DirectoryPage() {
       <header>
         <h1 className="text-3xl font-bold">Healthcare Directory</h1>
         <p className="text-muted-foreground mt-1">
-          Find health facilities near you. Note: This is a sample directory.
+          Find top-rated health facilities across Kenya.
         </p>
       </header>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
