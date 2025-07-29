@@ -3,15 +3,17 @@
 import { useState, useRef, useEffect, type FormEvent } from 'react';
 import { healthQueryChatbot, type HealthQueryChatbotOutput } from '@/ai/flows/health-query-chatbot';
 import { imageDiagnosis, type ImageDiagnosisOutput } from '@/ai/flows/image-diagnosis';
+import { textToSpeech, type TextToSpeechOutput } from '@/ai/flows/tts';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { SendHorizonal, User, Bot, Paperclip, X } from 'lucide-react';
+import { SendHorizonal, User, Bot, Paperclip, X, Mic, Square, Speaker } from 'lucide-react';
 import { Logo } from '@/components/icons/logo';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from "@/hooks/use-toast";
 import Image from 'next/image';
+import { AudioPlayer } from './audio-player';
 
 
 type Message = {
@@ -29,8 +31,14 @@ export function ChatbotInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioDataUri, setAudioDataUri] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
+
   const { toast } = useToast();
 
   useEffect(() => {
@@ -94,6 +102,72 @@ export function ChatbotInterface() {
       fileInputRef.current.value = '';
     }
   };
+
+  const handleToggleRecording = () => {
+    if (isRecording) {
+      recognitionRef.current?.stop();
+    } else {
+      startSpeechRecognition();
+    }
+  };
+
+  const startSpeechRecognition = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({
+        title: "Speech Recognition Not Supported",
+        description: "Your browser does not support speech recognition. Try using Chrome or Safari.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = false;
+    recognitionRef.current.interimResults = false;
+    recognitionRef.current.lang = 'en-US';
+
+    recognitionRef.current.onstart = () => {
+      setIsRecording(true);
+    };
+
+    recognitionRef.current.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognitionRef.current.onerror = (event: any) => {
+      console.error('Speech recognition error', event.error);
+      setIsRecording(false);
+      toast({
+        title: "Speech Recognition Error",
+        description: `An error occurred: ${event.error}`,
+        variant: "destructive",
+      });
+    };
+
+    recognitionRef.current.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setInputValue(transcript);
+    };
+
+    recognitionRef.current.start();
+  };
+
+  const handlePlayAudio = async (text: string) => {
+    setIsPlaying(true);
+    try {
+      const { audioDataUri } = await textToSpeech({ text });
+      setAudioDataUri(audioDataUri);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Audio Playback Error",
+        description: "Failed to generate audio for the response.",
+        variant: "destructive",
+      });
+      setIsPlaying(false);
+    }
+  };
   
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -132,6 +206,7 @@ export function ChatbotInterface() {
         };
       }
       setMessages((prev) => [...prev, assistantMessage]);
+      await handlePlayAudio(assistantMessage.content);
     } catch (error) {
       console.error(error);
        toast({
@@ -146,6 +221,15 @@ export function ChatbotInterface() {
 
   return (
     <div className="flex h-full flex-1 flex-col p-4 gap-4">
+       {audioDataUri && isPlaying && (
+        <AudioPlayer 
+          audioDataUri={audioDataUri} 
+          onEnded={() => {
+            setIsPlaying(false);
+            setAudioDataUri(null);
+          }} 
+        />
+      )}
       <ScrollArea className="flex-1" ref={scrollAreaRef}>
         <div className="space-y-6 pr-4">
           {messages.length === 1 && messages[0].id === 'initial-message' && !imagePreview && (
@@ -183,7 +267,20 @@ export function ChatbotInterface() {
                 {message.image && (
                     <Image src={message.image} alt="User upload" width={300} height={300} className="rounded-md" />
                 )}
-                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                <div className="flex items-center gap-2">
+                    <p className="text-sm whitespace-pre-wrap flex-1">{message.content}</p>
+                    {message.role === 'assistant' && message.id !== 'initial-message' && (
+                       <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handlePlayAudio(message.content)}
+                          disabled={isLoading || isPlaying}
+                          className="h-6 w-6"
+                       >
+                          <Speaker className="h-4 w-4" />
+                       </Button>
+                    )}
+                </div>
               </div>
               {message.role === 'user' && (
                 <Avatar className="h-8 w-8">
@@ -230,10 +327,19 @@ export function ChatbotInterface() {
           <Input
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder={imageData ? "Ask a question about the image..." : "Ask a health question..."}
+            placeholder={isRecording ? "Listening..." : (imageData ? "Ask a question about the image..." : "Ask a health question...")}
             className="flex-1"
-            disabled={isLoading}
+            disabled={isLoading || isRecording}
           />
+           <Button
+            type="button"
+            size="icon"
+            variant={isRecording ? "destructive" : "ghost"}
+            onClick={handleToggleRecording}
+            disabled={isLoading}
+          >
+            {isRecording ? <Square className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+          </Button>
           <input
             type="file"
             ref={fileInputRef}
