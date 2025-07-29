@@ -1,8 +1,9 @@
+
 'use client';
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, Hospital, MessageSquare, Stethoscope, User } from 'lucide-react';
+import { BookOpen, Hospital, MessageSquare, Stethoscope, User, Siren } from 'lucide-react';
 import {
   SidebarHeader,
   SidebarContent,
@@ -15,6 +16,7 @@ import { Logo } from '@/components/icons/logo';
 import { cn } from '@/lib/utils';
 import { UserButton } from './user-button';
 import { useSidebar } from './ui/sidebar';
+import { useEffect, useState } from 'react';
 
 
 const links = [
@@ -22,6 +24,7 @@ const links = [
   { href: '/symptom-checker', label: 'Symptom Checker', icon: Stethoscope },
   { href: '/resources', label: 'Health Resources', icon: BookOpen },
   { href: '/directory', label: 'Healthcare Directory', icon: Hospital },
+  { href: '/emergency', label: 'Emergency Services', icon: Siren },
 ];
 
 const bottomLinks = [
@@ -30,8 +33,11 @@ const bottomLinks = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-   const { state } = useSidebar();
-
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <>
@@ -81,7 +87,7 @@ export function AppSidebar() {
                 </SidebarMenuItem>
             ))}
         </SidebarMenu>
-        <UserButton />
+        {isClient && <UserButton />}
       </SidebarFooter>
     </>
   );
