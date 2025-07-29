@@ -3,3 +3,4 @@ config();
 
 import '@/ai/flows/health-query-chatbot.ts';
 import '@/ai/flows/symptom-checker.ts';
+import '@/ai/flows/image-diagnosis.ts';
