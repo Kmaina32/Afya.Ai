@@ -47,7 +47,7 @@ const prompt = ai.definePrompt({
   Analyze the user's query and choose the best path from the provided list.
 
   Available Pages and their purpose:
-  - '/chatbot': General AI health chat.
+  - '/chatbot': General AI health chat, or if nothing else matches.
   - '/symptom-checker': Check symptoms to find possible conditions.
   - '/therapist': AI mental health support.
   - '/nutritionist': Get a meal plan.
@@ -62,6 +62,8 @@ const prompt = ai.definePrompt({
   User Query: "{{{query}}}"
 
   Based on the query, select the most appropriate path. For example, if the user asks "where can I find a doctor", the best path is '/directory'. If they ask "remind me to take my pills", the best path is '/medication'.
+
+  IMPORTANT: If the query is unclear or does not match any of the pages, you MUST return "/chatbot" as the default path.
   `,
 });
 

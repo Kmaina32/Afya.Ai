@@ -29,16 +29,21 @@ export function MobileHeader() {
     setIsSearching(true);
     try {
       const result = await searchNavigator({ query: searchQuery });
-      router.push(result.path);
+      if (result && result.path) {
+        router.push(result.path);
+      } else {
+        router.push('/chatbot');
+      }
       setIsSearchOpen(false);
       setSearchQuery('');
     } catch (error) {
       console.error("Search failed:", error);
       toast({
-        title: 'Search Failed',
-        description: 'Could not find a relevant page. Please try a different query.',
+        title: 'Search Not Available',
+        description: 'Navigating you to the chatbot instead.',
         variant: 'destructive',
       });
+      router.push('/chatbot');
     } finally {
       setIsSearching(false);
     }
