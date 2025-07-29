@@ -12,14 +12,16 @@ import { Logo } from '@/components/icons/logo';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from "@/hooks/use-toast";
 import { AudioPlayer } from './audio-player';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth, db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 type Message = {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  timestamp?: any;
 };
-
-const THERAPIST_CHAT_HISTORY_KEY = 'therapistChatHistory';
 
 export function TherapistInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -28,6 +30,7 @@ export function TherapistInterface() {
   const [isRecording, setIsRecording] = useState(false);
   const [audioDataUri, setAudioDataUri] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [user, authLoading] = useAuthState(auth);
   
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -35,38 +38,38 @@ export function TherapistInterface() {
   const { toast } = useToast();
 
   useEffect(() => {
-    try {
-      const storedHistory = localStorage.getItem(THERAPIST_CHAT_HISTORY_KEY);
-      if (storedHistory) {
-        setMessages(JSON.parse(storedHistory));
-      } else {
-         setMessages([
-          {
-            id: 'initial-message',
-            role: 'assistant',
-            content: 'Welcome. This is a safe space to talk about whatever is on your mind. How are you feeling today?',
-          },
-        ]);
-      }
-    } catch (error) {
-        console.error("Failed to parse chat history from localStorage", error);
+    if (user) {
+        const q = query(
+            collection(db, `therapist-history/${user.uid}/messages`),
+            orderBy('timestamp', 'asc')
+        );
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const history = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
+            if (history.length === 0) {
+                setMessages([
+                    {
+                        id: 'initial-message',
+                        role: 'assistant',
+                        content: 'Welcome. This is a safe space to talk about whatever is on your mind. How are you feeling today?',
+                    },
+                ]);
+            } else {
+                setMessages(history);
+            }
+        });
+        return () => unsubscribe();
+    } else if (!authLoading) {
         setMessages([
-          {
-            id: 'initial-message',
-            role: 'assistant',
-            content: 'Welcome. This is a safe space to talk about whatever is on your mind. How are you feeling today?',
-          },
+            {
+                id: 'initial-message',
+                role: 'assistant',
+                content: 'Welcome. Please sign in to have your conversation history saved permanently.',
+            },
         ]);
     }
-  }, []);
+  }, [user, authLoading]);
 
   useEffect(() => {
-    try {
-        localStorage.setItem(THERAPIST_CHAT_HISTORY_KEY, JSON.stringify(messages));
-    } catch (error) {
-        console.error("Failed to save chat history to localStorage", error);
-    }
-
     if (scrollAreaRef.current) {
       const scrollable = scrollAreaRef.current.querySelector('div');
       if (scrollable) {
@@ -144,9 +147,27 @@ export function TherapistInterface() {
     }
   };
   
+  const saveMessage = async (message: Omit<Message, 'id'>) => {
+    if (user) {
+      await addDoc(collection(db, `therapist-history/${user.uid}/messages`), {
+        ...message,
+        timestamp: serverTimestamp(),
+      });
+    }
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
+
+    if (!user) {
+        toast({
+            title: "Please Sign In",
+            description: "You need to be signed in to start a conversation.",
+            variant: "destructive"
+        });
+        return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -154,6 +175,7 @@ export function TherapistInterface() {
       content: inputValue,
     };
     setMessages((prev) => [...prev, userMessage]);
+    await saveMessage(userMessage);
     
     const currentInputValue = inputValue;
     setInputValue('');
@@ -167,6 +189,7 @@ export function TherapistInterface() {
         content: response,
       };
       setMessages((prev) => [...prev, assistantMessage]);
+      await saveMessage(assistantMessage);
       await handlePlayAudio(assistantMessage.content);
     } catch (error) {
       console.error(error);
@@ -193,7 +216,7 @@ export function TherapistInterface() {
       )}
       <ScrollArea className="flex-1" ref={scrollAreaRef}>
         <div className="space-y-6 pr-4">
-          {messages.length === 1 && messages[0].id === 'initial-message' && (
+          {(messages.length === 0 || (messages.length === 1 && messages[0].id === 'initial-message')) && (
              <Card className="p-6 text-center">
                 <CardContent className="pt-6">
                     <Logo className="mx-auto size-12 text-primary/80" />
@@ -289,7 +312,14 @@ export function TherapistInterface() {
             <SendHorizonal className="h-5 w-5" />
           </Button>
         </form>
+         {!user && !authLoading && (
+            <p className="text-xs text-muted-foreground text-center">
+                <a href="/signin" className="underline">Sign in</a> to save your conversation history.
+            </p>
+        )}
       </div>
     </div>
   );
 }
+
+    

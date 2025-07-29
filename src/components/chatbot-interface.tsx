@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { SendHorizonal, User, Bot, Paperclip, X, Mic, Square, Speaker, FileText, Loader2 } from 'lucide-react';
+import { SendHorizonal, User, Bot, Paperclip, X, Mic, Square, Speaker, FileText, Loader2, Info } from 'lucide-react';
 import { Logo } from '@/components/icons/logo';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from "@/hooks/use-toast";
@@ -17,8 +17,9 @@ import Image from 'next/image';
 import { AudioPlayer } from './audio-player';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { db, auth } from '@/lib/firebase';
+import { collection, query, where, onSnapshot, addDoc, serverTimestamp, orderBy, doc, getDoc } from 'firebase/firestore';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 
 type Message = {
@@ -26,6 +27,7 @@ type Message = {
   role: 'user' | 'assistant';
   content: string;
   image?: string;
+  timestamp?: any;
 };
 
 type AlertContent = {
@@ -33,8 +35,6 @@ type AlertContent = {
     title: string;
     announcement: string;
 }
-
-const CHAT_HISTORY_KEY = 'chatHistory';
 
 export function ChatbotInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -48,6 +48,7 @@ export function ChatbotInterface() {
   const [summary, setSummary] = useState<ConsultationSummarizerOutput | null>(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [activeAlert, setActiveAlert] = useState<AlertContent | null>(null);
+  const [user, authLoading] = useAuthState(auth);
   
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -69,39 +70,41 @@ export function ChatbotInterface() {
     return () => unsubscribe();
   }, []);
 
+  // Fetch chat history from Firestore
   useEffect(() => {
-    try {
-      const storedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
-      if (storedHistory) {
-        setMessages(JSON.parse(storedHistory));
-      } else {
-         setMessages([
+    if (user) {
+      const q = query(
+        collection(db, `chatbot-history/${user.uid}/messages`),
+        orderBy('timestamp', 'asc')
+      );
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const history = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
+        if (history.length === 0) {
+            setMessages([
+              {
+                id: 'initial-message',
+                role: 'assistant',
+                content: 'Welcome to Afya.Ai! How can I help you today? You can also upload an image of a health concern. Your conversation will be saved.',
+              },
+            ]);
+        } else {
+            setMessages(history);
+        }
+      });
+      return () => unsubscribe();
+    } else if (!authLoading) {
+      // Handle guest users
+       setMessages([
           {
             id: 'initial-message',
             role: 'assistant',
-            content: 'Welcome to Afya.Ai! How can I help you today? You can also upload an image of a health concern.',
-          },
-        ]);
-      }
-    } catch (error) {
-        console.error("Failed to parse chat history from localStorage", error);
-        setMessages([
-          {
-            id: 'initial-message',
-            role: 'assistant',
-            content: 'Welcome to Afya.Ai! How can I help you today? You can also upload an image of a health concern.',
+            content: 'Welcome to Afya.Ai! Please sign in to have your conversation history saved permanently.',
           },
         ]);
     }
-  }, []);
+  }, [user, authLoading]);
 
   useEffect(() => {
-    try {
-        localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages));
-    } catch (error) {
-        console.error("Failed to save chat history to localStorage", error);
-    }
-
     if (scrollAreaRef.current) {
       const scrollable = scrollAreaRef.current.querySelector('div');
       if (scrollable) {
@@ -218,46 +221,64 @@ export function ChatbotInterface() {
       }
   }
   
+  const saveMessage = async (message: Omit<Message, 'id'>) => {
+    if (user) {
+      await addDoc(collection(db, `chatbot-history/${user.uid}/messages`), {
+        ...message,
+        timestamp: serverTimestamp(),
+      });
+    }
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!inputValue.trim() && !imageData) return;
 
+    if (!user) {
+        toast({
+            title: "Please Sign In",
+            description: "You need to be signed in to start a conversation.",
+            variant: "destructive"
+        });
+        return;
+    }
+
     setSummary(null);
 
+    const userMessageContent = inputValue;
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputValue,
+      content: userMessageContent,
       image: imagePreview ?? undefined,
     };
     setMessages((prev) => [...prev, userMessage]);
+    await saveMessage(userMessage);
     
-    const currentInputValue = inputValue;
     const currentImageData = imageData;
-
     setInputValue('');
     handleRemoveImage();
     setIsLoading(true);
 
     try {
-       let assistantMessage: Message;
+       let assistantResponse: string;
        if (currentImageData) {
-        const { diagnosis }: ImageDiagnosisOutput = await imageDiagnosis({ photoDataUri: currentImageData, question: currentInputValue });
-         assistantMessage = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: diagnosis,
-        };
+        const { diagnosis } = await imageDiagnosis({ photoDataUri: currentImageData, question: userMessageContent });
+        assistantResponse = diagnosis;
       } else {
-        const { response }: HealthQueryChatbotOutput = await healthQueryChatbot({ query: currentInputValue });
-        assistantMessage = {
+        const { response } = await healthQueryChatbot({ query: userMessageContent });
+        assistantResponse = response;
+      }
+
+      const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: response,
-        };
-      }
+          content: assistantResponse,
+      };
       setMessages((prev) => [...prev, assistantMessage]);
+      await saveMessage(assistantMessage);
       await handlePlayAudio(assistantMessage.content);
+
     } catch (error) {
       console.error(error);
        toast({
@@ -294,13 +315,13 @@ export function ChatbotInterface() {
 
       <ScrollArea className="flex-1" ref={scrollAreaRef}>
         <div className="space-y-6 pr-4">
-          {messages.length === 1 && messages[0].id === 'initial-message' && !imagePreview && (
+          {(messages.length === 0 || (messages.length === 1 && messages[0].id === 'initial-message')) && !imagePreview && (
              <Card className="p-6 text-center">
                 <CardContent className="pt-6">
                     <Logo className="mx-auto size-12 text-primary/80" />
                     <h2 className="mt-4 text-2xl font-semibold">Welcome to Afya.Ai</h2>
                     <p className="mt-2 text-muted-foreground">
-                        How can I help you today?
+                        {user ? "How can I help you today?" : "Sign in to save your chat history."}
                     </p>
                 </CardContent>
             </Card>
@@ -376,7 +397,7 @@ export function ChatbotInterface() {
           <div className="flex justify-end">
             <Dialog>
                  <DialogTrigger asChild>
-                    <Button variant="secondary" onClick={handleSummarize} disabled={isSummarizing}>
+                    <Button variant="secondary" onClick={handleSummarize} disabled={isSummarizing || !user}>
                         {isSummarizing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />}
                         Generate Summary
                     </Button>
@@ -457,7 +478,14 @@ export function ChatbotInterface() {
             <SendHorizonal className="h-5 w-5" />
           </Button>
         </form>
+         {!user && !authLoading && (
+          <p className="text-xs text-muted-foreground text-center">
+            <a href="/signin" className="underline">Sign in</a> to save your conversation history.
+          </p>
+        )}
       </div>
     </div>
   );
 }
+
+    
