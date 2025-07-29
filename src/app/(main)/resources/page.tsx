@@ -2,32 +2,32 @@ import Image from "next/image"
 
 const resources = [
   {
-    id: "malaria",
-    title: "Malaria Prevention and Treatment",
+    id: "maternal-health",
+    title: "Maternal and Child Health",
     image: "https://placehold.co/600x400.png",
-    hint: "mosquito net",
-    content: "Malaria is a life-threatening disease caused by parasites that are transmitted to people through the bites of infected female Anopheles mosquitoes. It is preventable and curable. Key prevention methods include using insecticide-treated mosquito nets and indoor residual spraying.",
+    hint: "mother child",
+    content: "Improving maternal and child health is a priority in Kenya. Access to skilled birth attendants, antenatal care (at least 4 visits), and postnatal care is crucial. The Linda Mama programme provides free maternity services in public hospitals.",
   },
   {
-    id: "nutrition",
-    title: "Balanced Diet and Nutrition",
+    id: "hiv-aids",
+    title: "HIV/AIDS Prevention and Management",
     image: "https://placehold.co/600x400.png",
-    hint: "healthy food",
-    content: "A balanced diet is crucial for good health. In Kenya, this means including a variety of local foods like ugali, sukuma wiki, githeri, and fresh fruits. Ensure your meals have a mix of carbohydrates, proteins, and vitamins to boost your immune system.",
+    hint: "red ribbon",
+    content: "Kenya has made significant progress in the fight against HIV/AIDS. Consistent condom use, voluntary medical male circumcision (VMMC), and pre-exposure prophylaxis (PrEP) are key prevention strategies. Free antiretroviral therapy (ART) is available at public health facilities.",
   },
   {
-    id: "hygiene",
-    title: "Water, Sanitation, and Hygiene (WASH)",
+    id: "tb",
+    title: "Tuberculosis (TB) Awareness",
     image: "https://placehold.co/600x400.png",
-    hint: "clean water",
-    content: "Access to clean water and practicing good hygiene are essential to prevent diseases like cholera and typhoid. Always wash your hands with soap and clean water, especially before eating and after using the toilet. Drink boiled or treated water to avoid waterborne illnesses.",
+    hint: "lungs xray",
+    content: "Tuberculosis remains a major public health concern. Symptoms include a persistent cough (sometimes with blood), fever, night sweats, and weight loss. Diagnosis and treatment for TB are free in all public health facilities across Kenya.",
   },
   {
-    id: "vaccination",
-    title: "Childhood Immunization",
+    id: "ncds",
+    title: "Non-Communicable Diseases (NCDs)",
     image: "https://placehold.co/600x400.png",
-    hint: "child vaccine",
-    content: "Vaccination is a safe and effective way to protect children from serious diseases. The Kenyan Ministry of Health provides a schedule of recommended vaccines for children, including those for polio, measles, and tetanus. Ensure your child completes their full immunization schedule.",
+    hint: "blood pressure",
+    content: "Diseases like diabetes, hypertension, and cancer are on the rise. Healthy lifestyle choices, including a balanced diet, regular physical activity, and avoiding tobacco and excessive alcohol, can significantly reduce your risk. Regular check-ups are vital for early detection.",
   },
 ];
 
