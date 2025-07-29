@@ -6,6 +6,9 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 export const languages = {
   en: 'English',
   sw: 'Swahili',
+  ki: 'Gikuyu',
+  luo: 'Dholuo',
+  luh: 'Luhya',
 };
 
 type LanguageCode = keyof typeof languages;
