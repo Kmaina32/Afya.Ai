@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect, type FormEvent } from 'react';
@@ -9,7 +10,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { SendHorizonal, User, Bot, Paperclip, X, Mic, Square, Speaker, FileText, Loader2, Info } from 'lucide-react';
+import { SendHorizonal, User, Bot, Paperclip, X, Mic, Square, Speaker, FileText, Loader2, Info, Siren } from 'lucide-react';
 import { Logo } from '@/components/icons/logo';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from "@/hooks/use-toast";
