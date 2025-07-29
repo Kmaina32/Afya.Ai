@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, Hospital, MessageSquare, Stethoscope } from 'lucide-react';
+import { BookOpen, Hospital, MessageSquare, Stethoscope, User } from 'lucide-react';
 import {
   SidebarHeader,
   SidebarContent,
@@ -14,6 +14,8 @@ import {
 import { Logo } from '@/components/icons/logo';
 import { cn } from '@/lib/utils';
 import { UserButton } from './user-button';
+import { useSidebar } from './ui/sidebar';
+
 
 const links = [
   { href: '/chatbot', label: 'AI Health Chatbot', icon: MessageSquare },
@@ -22,8 +24,14 @@ const links = [
   { href: '/directory', label: 'Healthcare Directory', icon: Hospital },
 ];
 
+const bottomLinks = [
+    { href: '/profile', label: 'Your Profile', icon: User },
+]
+
 export function AppSidebar() {
   const pathname = usePathname();
+   const { state } = useSidebar();
+
 
   return (
     <>
@@ -57,6 +65,22 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarContent>
        <SidebarFooter>
+        <SidebarMenu>
+            {bottomLinks.map((link) => (
+                 <SidebarMenuItem key={link.href}>
+                    <SidebarMenuButton
+                        asChild
+                        isActive={pathname.startsWith(link.href)}
+                        tooltip={{ children: link.label }}
+                    >
+                        <Link href={link.href}>
+                        <link.icon />
+                        <span className='group-data-[collapsible=icon]:hidden'>{link.label}</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            ))}
+        </SidebarMenu>
         <UserButton />
       </SidebarFooter>
     </>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { User, LogIn, LogOut } from 'lucide-react';
+import { User, LogIn, LogOut, Settings } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import type { User as FirebaseUser } from 'firebase/auth';
 import {
@@ -46,6 +46,13 @@ export function UserButton() {
         </DropdownMenuTrigger>
         <DropdownMenuContent side="right" align="start" className="w-56">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+           <DropdownMenuItem asChild>
+            <Link href="/profile">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Profile Settings</span>
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
