@@ -18,6 +18,8 @@ type Message = {
   content: string;
 };
 
+const CHAT_HISTORY_KEY = 'chatHistory';
+
 export function ChatbotInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -25,8 +27,39 @@ export function ChatbotInterface() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  useEffect(() => {
+    try {
+      const storedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
+      if (storedHistory) {
+        setMessages(JSON.parse(storedHistory));
+      } else {
+         setMessages([
+          {
+            id: 'initial-message',
+            role: 'assistant',
+            content: 'Welcome to Afya.Ai! How can I help you today?',
+          },
+        ]);
+      }
+    } catch (error) {
+        console.error("Failed to parse chat history from localStorage", error);
+        setMessages([
+          {
+            id: 'initial-message',
+            role: 'assistant',
+            content: 'Welcome to Afya.Ai! How can I help you today?',
+          },
+        ]);
+    }
+  }, []);
 
   useEffect(() => {
+    try {
+        localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages));
+    } catch (error) {
+        console.error("Failed to save chat history to localStorage", error);
+    }
+
     if (scrollAreaRef.current) {
       const scrollable = scrollAreaRef.current.querySelector('div');
       if (scrollable) {
@@ -72,7 +105,7 @@ export function ChatbotInterface() {
     <div className="flex h-full flex-1 flex-col p-4 gap-4">
       <ScrollArea className="flex-1" ref={scrollAreaRef}>
         <div className="space-y-6 pr-4">
-          {messages.length === 0 && (
+          {messages.length === 1 && messages[0].id === 'initial-message' && (
              <Card className="p-6 text-center">
                 <CardContent className="pt-6">
                     <Logo className="mx-auto size-12 text-primary/80" />

@@ -72,6 +72,9 @@ export default function SignUpPage() {
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign Up
             </Button>
+            <Button variant="outline" className="w-full" asChild>
+                <Link href="/chatbot">Continue as Guest</Link>
+            </Button>
           </form>
            <div className="mt-4 text-center text-sm">
             Already have an account?{' '}
