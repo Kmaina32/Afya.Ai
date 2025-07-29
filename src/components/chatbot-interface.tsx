@@ -138,11 +138,14 @@ export function ChatbotInterface() {
     recognitionRef.current.onerror = (event: any) => {
       console.error('Speech recognition error', event.error);
       setIsRecording(false);
-      toast({
-        title: "Speech Recognition Error",
-        description: `An error occurred: ${event.error}`,
-        variant: "destructive",
-      });
+      
+      if (event.error !== 'no-speech') {
+        toast({
+          title: "Speech Recognition Error",
+          description: `An error occurred: ${event.error}`,
+          variant: "destructive",
+        });
+      }
     };
 
     recognitionRef.current.onresult = (event: any) => {
