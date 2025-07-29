@@ -57,11 +57,11 @@ export function UserButton() {
   }
 
   return (
-    <Link href="/signin" legacyBehavior passHref>
-      <Button variant="ghost" className="w-full justify-start p-2">
+    <Button asChild variant="ghost" className="w-full justify-start p-2">
+      <Link href="/signin">
          <LogIn className="h-5 w-5" />
          <span className="ml-2 group-data-[collapsible=icon]:hidden">Sign In</span>
-      </Button>
-    </Link>
+      </Link>
+    </Button>
   );
 }
