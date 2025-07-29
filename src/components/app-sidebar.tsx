@@ -3,7 +3,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, Hospital, MessageSquare, Stethoscope, User, Siren } from 'lucide-react';
+import { BookOpen, Hospital, MessageSquare, Stethoscope, User, Siren, Heart } from 'lucide-react';
 import {
   SidebarHeader,
   SidebarContent,
@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 const links = [
   { href: '/chatbot', label: 'AI Health Chatbot', icon: MessageSquare },
   { href: '/symptom-checker', label: 'Symptom Checker', icon: Stethoscope },
+  { href: '/therapist', label: 'AI Therapist', icon: Heart },
   { href: '/resources', label: 'Health Resources', icon: BookOpen },
   { href: '/directory', label: 'Healthcare Directory', icon: Hospital },
   { href: '/emergency', label: 'Emergency Services', icon: Siren },
