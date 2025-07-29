@@ -29,7 +29,7 @@ export function MobileHeader() {
     setIsSearching(true);
     try {
       const result = await searchNavigator({ query: searchQuery });
-      if (result && result.path) {
+      if (result?.path) {
         router.push(result.path);
       } else {
         router.push('/chatbot');
