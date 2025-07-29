@@ -1,6 +1,8 @@
+
 'use client';
 
 import { AppSidebar } from '@/components/app-sidebar';
+import { DesktopHeader } from '@/components/desktop-header';
 import { MobileHeader } from '@/components/mobile-header';
 import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -24,7 +26,7 @@ export default function MainLayout({
         <AppSidebar />
       </Sidebar>
       <div className="flex flex-1 flex-col">
-        {isClient && isMobile && <MobileHeader />}
+        {isClient && (isMobile ? <MobileHeader /> : <DesktopHeader />)}
         <SidebarInset>{children}</SidebarInset>
       </div>
     </SidebarProvider>
