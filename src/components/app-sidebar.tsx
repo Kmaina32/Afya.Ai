@@ -9,9 +9,11 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarFooter,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/icons/logo';
 import { cn } from '@/lib/utils';
+import { UserButton } from './user-button';
 
 const links = [
   { href: '/chatbot', label: 'AI Health Chatbot', icon: MessageSquare },
@@ -49,6 +51,9 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
+       <SidebarFooter>
+        <UserButton />
+      </SidebarFooter>
     </>
   );
 }
