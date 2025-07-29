@@ -15,13 +15,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from './ui/skeleton';
 
 export function UserButton() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
+      setIsLoading(false);
     });
     return () => unsubscribe();
   }, []);
@@ -29,6 +32,15 @@ export function UserButton() {
   const handleSignOut = async () => {
     await auth.signOut();
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 p-2">
+        <Skeleton className="h-8 w-8 rounded-full" />
+        <Skeleton className="h-4 w-24 group-data-[collapsible=icon]:hidden" />
+      </div>
+    );
+  }
 
   if (user) {
     return (
