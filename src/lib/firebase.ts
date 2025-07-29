@@ -2,10 +2,12 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+// IMPORTANT: Replace "YOUR_API_KEY_HERE" with your actual Firebase Web API Key.
+const firebaseApiKey = "YOUR_API_KEY_HERE";
 
-if (!firebaseApiKey) {
-  throw new Error('NEXT_PUBLIC_FIREBASE_API_KEY is not set. Please add it to your environment variables.');
+if (!firebaseApiKey || firebaseApiKey === "YOUR_API_KEY_HERE") {
+  console.error('Firebase API Key is not set in src/lib/firebase.ts. Please replace "YOUR_API_KEY_HERE" with your actual key.');
+  // We don't throw an error here to allow the app to build, but Firebase will not work.
 }
 
 const firebaseConfig = {
