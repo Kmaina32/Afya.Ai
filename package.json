@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "next build",
+    "build": "if [ -z \"$NEXT_PUBLIC_FIREBASE_API_KEY\" ] || [ -z \"$GEMINI_API_KEY\" ]; then echo 'ERROR: NEXT_PUBLIC_FIREBASE_API_KEY and GEMINI_API_KEY must be set in the environment.'; exit 1; fi && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"

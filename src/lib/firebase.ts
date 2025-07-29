@@ -2,8 +2,14 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
+const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+
+if (!firebaseApiKey) {
+  throw new Error('NEXT_PUBLIC_FIREBASE_API_KEY is not set. Please add it to your environment variables.');
+}
+
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  apiKey: firebaseApiKey,
   authDomain: "afyabot-467412.firebaseapp.com",
   projectId: "afyabot-467412",
   storageBucket: "afyabot-467412.appspot.com",
