@@ -1,3 +1,4 @@
+
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -47,6 +48,21 @@ export default function SignUpPage() {
     }
   };
 
+  const svgBackground = `
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid slice'>
+      <defs>
+        <pattern id='p' width='20' height='20' patternUnits='userSpaceOnUse'>
+          <g fill='hsl(var(--primary))' fill-opacity='0.1'>
+            <path d='M10 0 L10 20 Z' stroke='hsl(var(--primary))' stroke-width='0.5'/>
+            <path d='M0 10 L20 10 Z' stroke='hsl(var(--primary))' stroke-width='0.5'/>
+          </g>
+        </pattern>
+      </defs>
+      <rect width='100%' height='100%' fill='url(#p)'/>
+    </svg>
+  `;
+  const encodedSvg = `data:image/svg+xml;base64,${Buffer.from(svgBackground).toString('base64')}`;
+
   return (
      <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
        <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -87,8 +103,7 @@ export default function SignUpPage() {
       <div className="hidden bg-muted lg:flex lg:items-center lg:justify-center relative">
          <div 
           className="absolute inset-0 bg-cover bg-center" 
-          style={{backgroundImage: "url('https://placehold.co/1200x800.png')", opacity: 0.2}}
-          data-ai-hint="kenyan community healthcare"
+          style={{backgroundImage: `url("${encodedSvg}")`}}
         ></div>
         <div className="relative z-10 text-center p-8">
            <Logo className="mx-auto size-24 text-primary" />
