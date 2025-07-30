@@ -58,18 +58,20 @@ export function ChatbotInterface() {
   const { toast } = useToast();
 
    useEffect(() => {
-    const q = query(collection(db, "alerts"), where("isActive", "==", true));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      if (!querySnapshot.empty) {
-        const alertDoc = querySnapshot.docs[0];
-        setActiveAlert({ id: alertDoc.id, ...alertDoc.data() as Omit<AlertContent, 'id'> });
-      } else {
-        setActiveAlert(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+    if (user) {
+      const q = query(collection(db, "alerts"), where("isActive", "==", true));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        if (!querySnapshot.empty) {
+          const alertDoc = querySnapshot.docs[0];
+          setActiveAlert({ id: alertDoc.id, ...alertDoc.data() as Omit<AlertContent, 'id'> });
+        } else {
+          setActiveAlert(null);
+        }
+      });
+  
+      return () => unsubscribe();
+    }
+  }, [user]);
 
   // Fetch chat history from Firestore
   useEffect(() => {
@@ -488,5 +490,3 @@ export function ChatbotInterface() {
     </div>
   );
 }
-
-    
