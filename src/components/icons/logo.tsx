@@ -7,11 +7,11 @@ export const Logo = React.forwardRef<
   return (
     <svg
       ref={ref}
-      viewBox="0 0 100 130"
+      viewBox="0 0 100 100"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <g>
+      <g transform="scale(1.2) translate(-8, -10)">
         <rect x="30" y="20" width="40" height="15" fill="#0f5159" />
         <rect x="42.5" y="5" width="15" height="45" fill="#f3b83f" />
         <path
@@ -35,23 +35,12 @@ export const Logo = React.forwardRef<
         x="50"
         y="95"
         fontFamily="sans-serif"
-        fontSize="14"
-        fill="#62cddc"
+        fontSize="16"
+        fill="hsl(var(--primary))"
         textAnchor="middle"
         fontWeight="bold"
       >
         AFYA.AI
-      </text>
-      <text
-        x="50"
-        y="115"
-        fontFamily="sans-serif"
-        fontSize="8"
-        fill="#62cddc"
-        textAnchor="middle"
-        letterSpacing="1"
-      >
-        Milleast.tech
       </text>
     </svg>
   );
